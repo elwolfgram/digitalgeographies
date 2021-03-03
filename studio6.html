@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--This is how you comment for html-->
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title> My Map </title>
+    <!--This where you put all your dependencies-->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZWx3b2xmZ3JhbSIsImEiOiJja2xzYnpkbzEwMjV3MnFtc2RqeHRuMjJ6In0.3phF5GkhQ8KRPizeEECkYw';
+    //variables (var) up the top
+    var map = new mapboxgl.Map({
+      container: 'map', // container id
+      style: 'mapbox://styles/mapbox/light-v10', // stylesheet location
+      zoom: 12 // starting zoom
+    });
+    var geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true
+    });
+    var popup = new mapboxgl.Popup();
+    // map.on(functions) at the bottom!
+    map.addControl(geolocate);
+    map.on('load', function() {
+      geolocate.trigger();
+      map.addLayer({
+  id: 'geojson',
+  type: 'symbol',
+  source: {
+    type: 'geojson',
+    data: geojson
+  },
+  layout: {
+    'icon-image': 'park-15', // more icons here: https://labs.mapbox.com/maki-icons/editor/
+    'icon-allow-overlap': true
+  },
+  paint: { }
+})
+    });
+    map.on('mousemove', function(e) {
+  var features = map.queryRenderedFeatures(e.point, { layers: ['geojson'] });
+  if (!features.length) {
+    popup.remove();
+    return;
+  }
+  var feature = features[0];
+
+  popup.setLngLat(feature.geometry.coordinates)
+  .setHTML(feature.properties.Title)
+  .addTo(map);
+
+});
+    var geojson = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: {
+        Title: 'Highest'
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          -155.95376014709473,
+          19.64662928395294
+        ]
+      }
+    },
+    {
+      type: 'Feature',
+      properties: {
+        Title: 'Higher'
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          -155.97487449645996,
+          19.628278921578705
+        ]
+      }
+    },
+    {
+      type: 'Feature',
+      properties: {
+        Title: 'Not so High'
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          -155.98903656005857,
+          19.631835983846493
+        ]
+      }
+    }
+  ]
+};
+    </script>
+  </body>
+</html>
